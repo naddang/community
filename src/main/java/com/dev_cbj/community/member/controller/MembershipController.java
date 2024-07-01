@@ -25,4 +25,9 @@ public class MembershipController {
     public String findPw() {
         return "membership/findPw";
     }
+
+    @GetMapping("/findResult")
+    public String findResult() {
+        return "membership/findResult";
+    }
 }
