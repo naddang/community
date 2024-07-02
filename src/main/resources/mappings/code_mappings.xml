@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cod_config">
+    <select id="selectCodeListByParentCode" parameterType="string" resultType="com.dev_cbj.community.comm_code.dto.CommCodeDTO">
+        SELECT
+            *
+        FROM comm_code
+        WHERE parent_code = #{code}
+        ORDER BY code_order
+    </select>
+
+    <insert
+
+
+    <select id="code_select_momlist"  resultType="com.dnpp.base.code.vo.CodeVO" parameterType="com.dnpp.base.code.vo.CodeVO">
+        SELECT @R AS _ID
+             ,(
+            SELECT @R:= pcd
+        FROM  comm_code
+        WHERE cd = _ID
+            ) AS _MANAGER_ID
+
+        FROM ( SELECT @R:='ed04') VARS
+                , comm_code H
+
+    </select>
+    <select id="code_selecct_list"  resultType="com.dnpp.base.code.vo.CodeVO" parameterType="java.lang.String">
+        SELECT
+            *
+        FROM comm_code
+        WHERE 1=1
+          AND pcd = #{pcd}
+          AND useyn = 'Y'
+        order by ordseq desc
+    </select>
+    <select id="codeListOrderByName"  resultType="com.dnpp.base.code.vo.CodeVO" parameterType="java.lang.String">
+        SELECT
+            *
+        FROM comm_code
+        WHERE 1=1
+          AND pcd = #{pcd}
+          AND useyn = 'Y'
+        order by cd_name
+    </select>
+    <select id="check_overlapcode"  resultType="com.dnpp.base.code.vo.CodeVO" parameterType="com.dnpp.base.code.vo.CodeVO">
+        SELECT
+            c.cd AS cd
+             ,c.cd_name AS cd_name
+        FROM comm_code c
+                 inner join board_config bc
+                            on bc.b_code=c.cd
+        where c.cd=#{cd}
+    </select>
+    <select id="findmomidx"  resultType="com.dnpp.base.code.vo.CodeVO" parameterType="com.dnpp.base.code.vo.CodeVO">
+        SELECT
+            *
+        FROM comm_code c
+        WHERE 1=1
+          AND idx = #{idx}
+    </select>
+    <select id="findTotalListCount" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM comm_code
+    </select>
+    <select id="findUseListCount" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM comm_code
+        where useyn= 'Y'
+    </select>
+    <select id="findMaxDepth"  resultType="int">
+        SELECT
+            Max(depth)
+        FROM comm_code
+    </select>
+    <select id="selectsamemomchild"  resultType="com.dnpp.base.code.vo.CodeVO" parameterType="java.lang.String">
+        SELECT
+            *
+        FROM comm_code
+        WHERE 1=1
+          AND pcd is null
+          and depth=0
+        order by ordseq desc
+    </select>
+    <select id="sselectcodemom"  resultType="com.dnpp.base.code.vo.CodeVO" parameterType="java.lang.String">
+        SELECT
+            *
+        FROM comm_code
+        WHERE 1=1
+          AND cd = #{pcd}
+    </select>
+
+    <select id="selectRow"  resultType="com.dnpp.base.code.vo.CodeVO" parameterType="com.dnpp.base.code.vo.CodeVO">
+        SELECT
+        *
+        FROM comm_code
+        WHERE 1=1
+        <!-- 송배권추가 -->
+        AND pcd = 'bogu'
+        <include refid="ucolum"/>
+
+    </select>
+
+    <select id="selectOneCode"  resultType="com.dnpp.base.code.vo.CodeVO" parameterType="int">
+        SELECT
+            idx
+             ,pcd
+             ,cd
+             ,cd_name
+             ,cd_ename
+             ,cd_value
+             ,depth
+             ,ordseq
+             ,useyn
+             ,ref1
+             ,ref2
+             ,ref3
+             ,ref4
+             ,ref5
+             ,to_char(intime, 'yyyy.MM.dd') AS intime
+             ,upduser
+             ,to_char(updtime, 'yyyy.MM.dd') AS updtime
+             ,(SELECT cd_name FROM comm_code WHERE cd = c.pcd) AS pcd_name
+        FROM   comm_code c
+        WHERE  1 = 1
+          AND idx=#{idx}
+    </select>
+
+    <select id="selectPagingList"  resultType="com.dnpp.base.code.vo.CodeVO" parameterType="com.dnpp.base.code.vo.CodeVO">
+        SELECT
+        c.idx     	as		idx
+        ,c.pcd     	as		pcd
+        ,c.cd      	as		cd
+        ,c.cd_name 	as		cd_name
+        ,c.cd_ename	as		cd_ename
+        ,c.cd_value	as		cd_value
+        ,c.depth   	as		depth
+        ,c.ordseq  	as		ordseq
+        ,c.useyn   	as		useyn
+        ,c.inuser  	as		inuser
+        ,c.intime  	as		intime
+        ,c.upduser 	as		upduser
+        ,c.updtime 	as		updtime
+        ,c.p_value 	as		p_value
+        ,(	SELECT
+        cd_name
+        FROM comm_code
+        where c.pcd=cd
+        and cd!= '*'
+        ) AS pcd_name
+        ,(	SELECT
+        COUNT(*)
+        FROM comm_code
+        where pcd = c.cd
+        ) AS max
+        FROM comm_code c
+        WHERE 1=1
+        <if test=" sDpth!=-1" >
+            and c.depth=#{sDpth}
+        </if>
+        <if test="kywrd != null and kywrd != ''">
+            <include refid="keyword"/>
+        </if>
+        ORDER BY c.pcd , c.ordseq
+        LIMIT #{pageSize} OFFSET #{startRowNum}
+    </select>
+
+
+    <select id="code_select_SamePcdCount"  resultType="int" parameterType="com.dnpp.base.code.vo.CodeVO">
+        SELECT
+            COUNT(*)
+        FROM comm_code
+        where pcd=#{pcd}
+    </select>
+    <select id="code_select_NullPcdCount"  resultType="int" parameterType="com.dnpp.base.code.vo.CodeVO">
+        SELECT
+            COUNT(*)
+        FROM comm_code
+        where pcd = 'root'
+    </select>
+    <select id="selectPagingListCount"  resultType="int" parameterType="com.dnpp.base.code.vo.CodeVO">
+        SELECT
+        COUNT(*)
+        FROM comm_code
+        where 1=1
+        <if test=" sDpth!=-1" >
+            and depth=#{sDpth}
+        </if>
+
+        <if test="kywrd != null and kywrd != ''">
+            <if test=" sKnd != null and sKnd != ''">
+                <include refid="keyword"/>
+            </if>
+        </if>
+        <!-- <if test="kywrd != null and kywrd != ''">
+        and testnm like CONCAT('%',#{kywrd},'%')
+        </if> -->
+    </select>
+
+    <update id="code_update_bcfcode"  parameterType="com.dnpp.base.code.vo.CodeVO">
+        UPDATE comm_code
+        SET
+            cd = #{cd},
+            cd_name = #{cd_name},
+            cd_ename = #{cd_ename},
+            cd_value = #{cd_value},
+            ref1 = #{ref1},
+            ref2 = #{ref2},
+            ref3 = #{ref3},
+            ref4 = #{ref4},
+            ref5 = #{ref5}
+        WHERE idx=#{idx}
+    </update>
+    <update id="code_update_spcode"  parameterType="com.dnpp.base.code.vo.CodeVO">
+        update comm_code
+        set
+            cd      =#{ cd       }
+          ,cd_name =#{ cd_name  }
+          ,cd_ename=#{ cd_ename }
+          ,cd_value=#{ cd_value }
+          ,ref1    =#{ ref1     }
+          ,ref2    =#{ ref2     }
+          ,ref3    =#{ ref3     }
+          ,ref4    =#{ ref4     }
+          ,ref5    =#{ ref5     }
+        where pcd=#{pcd}
+          and cd=#{cd}
+    </update>
+
+    <update id="CodeSeqMinus"  parameterType="com.dnpp.base.code.vo.CodeVO">
+        update comm_code
+        set ordseq=ordseq-1
+        <![CDATA[ where (ordseq <= #{ordseq} AND #{afterseq} < ordseq) ]]>
+        <choose>
+            <when test="pcd !=null and pcd !='' ">
+                and pcd=#{pcd}
+            </when>
+            <otherwise>
+                and pcd is null
+            </otherwise>
+        </choose>
+    </update>
+
+    <update id="CodeSeqPlus"  parameterType="com.dnpp.base.code.vo.CodeVO">
+        update comm_code
+        set ordseq=ordseq+1
+        <![CDATA[ where (ordseq >= #{ordseq} AND #{afterseq} > ordseq) ]]>
+        <choose>
+            <when test="pcd !=null and pcd !='' ">
+                and pcd=#{pcd}
+            </when>
+            <otherwise>
+                and pcd is null
+            </otherwise>
+        </choose>
+    </update>
+
+    <update id="updateBigOrdseqMinus"  parameterType="com.dnpp.base.code.vo.CodeVO">
+        update comm_code
+        set ordseq=ordseq-1
+        where ordseq>=#{ordseq}
+        <choose>
+            <when test="pcd !=null and pcd !='' ">
+                and pcd=#{pcd}
+            </when>
+            <otherwise>
+                and pcd is null
+            </otherwise>
+        </choose>
+    </update>
+    <update id="updateBigOrdseqPlus"  parameterType="com.dnpp.base.code.vo.CodeVO">
+        update comm_code
+        set ordseq=ordseq+1
+        where ordseq>=#{ordseq}
+        <choose>
+            <when test="pcd !=null and pcd !='' ">
+                and pcd=#{pcd}
+            </when>
+            <otherwise>
+                and pcd is null
+            </otherwise>
+        </choose>
+    </update>
+    <update id="update_ordseq_array"  parameterType="com.dnpp.base.code.vo.CodeVO">
+        update comm_code
+        set ordseq =#{ordseq}
+        where idx=#{idx}
+    </update>
+    <delete id="DeletebyIdx"  parameterType="com.dnpp.base.code.vo.CodeVO">
+        DELETE FROM comm_code
+        where idx=#{idx}
+    </delete>
+    <insert id="insertVO"  parameterType="com.dnpp.base.code.vo.CodeVO" useGeneratedKeys="true" keyProperty="idx" >
+        insert into comm_code
+        <choose >
+            <when test="(pcd !=null and pcd != '')  or  pcd.equalsIgnoreCase('none')">
+                (
+                idx,
+                pcd,
+                cd,
+                cd_name,
+                cd_ename,
+                cd_value,
+                depth,
+                ordseq,
+                useyn,
+                ref1,
+                ref2,
+                ref3,
+                ref4,
+                ref5
+                )
+            </when>
+            <otherwise>
+                (
+                idx,
+                cd,
+                cd_name,
+                cd_ename,
+                cd_value,
+                depth,
+                ordseq,
+                useyn,
+                ref1,
+                ref2,
+                ref3,
+                ref4,
+                ref5
+                )
+            </otherwise>
+        </choose>
+        values
+        <choose >
+            <when test="(pcd !=null and pcd != '')  or  pcd.equalsIgnoreCase('none')">
+                (
+                (SELECT COALESCE(MAX(idx), 0)+1 FROM comm_code),
+                #{	pcd 	},
+                #{	cd 	},
+                #{	cd_name 	},
+                #{	cd_ename},
+                #{	cd_value 	},
+                #{	depth	},
+                #{	ordseq	},
+                #{	useyn	},
+                #{ref1},
+                #{ref2 },
+                #{ref3 },
+                #{ref4 },
+                #{ref5 }
+                )
+            </when>
+            <otherwise>
+                (
+                (SELECT COALESCE(MAX(idx),0)+1 FROM comm_code),
+                #{	cd 	},
+                #{	cd_name 	},
+                #{	cd_ename},
+                #{	cd_value 	},
+                #{	depth	},
+                #{	ordseq	},
+                #{	useyn	},
+                #{ref1 },
+                #{ref2 },
+                #{ref3 },
+                #{ref4 },
+                #{ref5 }
+                )
+            </otherwise>
+        </choose>
+    </insert>
+
+    <select id="code_select_list" resultType="com.dnpp.base.code.vo.CodeVO" parameterType="java.lang.String">
+        SELECT
+            *
+        FROM comm_code
+        WHERE 1=1
+          AND pcd = #{pcd}
+          AND useyn = 'Y'
+        ORDER BY ordseq
+    </select>
+
+    <select id="selectMaxIdx" resultType="_int">
+        SELECT
+            COALESCE(MAX(idx),0) + 1
+        FROM comm_code
+    </select>
+</mapper>
