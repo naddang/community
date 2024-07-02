@@ -44,6 +44,23 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.9'
     //org.json
     implementation 'org.json:json:20231013'
+    //jwt
+    //JWT
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+    runtimeOnly(group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    runtimeOnly(group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    //엑셀 라이브러리
+    implementation 'net.sf.jxls:jxls-core:1.0.6'
+    implementation 'org.jxls:jxls-poi:1.0.13'
+    implementation 'org.jxls:jxls:2.4.2'
+    implementation 'org.jxls:jxls-jexcel:1.0.6'
+    implementation 'org.apache.poi:poi:3.11'
+    implementation 'org.apache.poi:poi-ooxml:3.11'
+    implementation group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.2'
 }
 
 tasks.named('test') {
