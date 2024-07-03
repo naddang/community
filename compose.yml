@@ -11,3 +11,9 @@ services:
       - "5432:5432"
     volumes:
       - ./docker/db/data:/var/lib/postgresql/data
+  mqtt:
+    container_name: mqtt
+    restart: always
+    image: eclipse-mosquitto:2.0.14
+    ports:
+      - "1883:1883"
