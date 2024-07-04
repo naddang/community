@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -14,4 +15,8 @@ import java.util.List;
 public class ResponseListDTO<T> extends ResponseDTO {
     private int totalCount;
     private List<T> list;
+
+    public ResponseListDTO(HttpStatus status) {
+        super(status);
+    }
 }
